@@ -1,42 +1,42 @@
 project( FEAR_ClientFXDLL )
 
 set(SOURCES
-  BaseCreateFX.cpp
-  BaseFx.cpp
-  BaseSpriteFX.cpp
-  CameraShakeFX.cpp
-  clientfx.cpp
-  ClientFXVertexDeclMgr.cpp
-  CreateFX.cpp
-  CreateRayFX.cpp
-  DebrisSystemFX.cpp
-  DebrisSystemProps.cpp
+  src/BaseCreateFX.cpp
+  src/BaseFx.cpp
+  src/BaseSpriteFX.cpp
+  src/CameraShakeFX.cpp
+  src/clientfx.cpp
+  src/ClientFXVertexDeclMgr.cpp
+  src/CreateFX.cpp
+  src/CreateRayFX.cpp
+  src/DebrisSystemFX.cpp
+  src/DebrisSystemProps.cpp
   ../Shared/DebugNew.cpp
-  DecalFX.cpp
-  dynalightfx.cpp
-  FlareSpriteFX.cpp
-  LensFlareFX.cpp
-  lightningfx.cpp
-  LightningProps.cpp
-  ltbmodelfx.cpp
+  src/DecalFX.cpp
+  src/dynalightfx.cpp
+  src/FlareSpriteFX.cpp
+  src/LensFlareFX.cpp
+  src/lightningfx.cpp
+  src/LightningProps.cpp
+  src/ltbmodelfx.cpp
   ../../runtime/kernel/mem/src/ltmemory.cpp # currently not found in the source tree
   ../../sdk/inc/ltmodule.cpp
   ../../sdk/inc/ltobjref.cpp
-  MemoryPageMgr.cpp
-  OverlayFX.cpp
-  ParticleSimulation.cpp
-  ParticleSystemFX.cpp
-  ParticleSystemGroup.cpp
-  ParticleSystemProps.cpp
+  src/MemoryPageMgr.cpp
+  src/OverlayFX.cpp
+  src/ParticleSimulation.cpp
+  src/ParticleSystemFX.cpp
+  src/ParticleSystemGroup.cpp
+  src/ParticleSystemProps.cpp
 #  ../../sdk/inc/performancemonitorhook.cpp # currently not found in the source tree
-  PolyTrailFX.cpp
-  PolyTrailProps.cpp
-  RumbleFX.cpp
-  Soundfx.cpp
-  spritefx.cpp
-  stdafx.cpp
-  TracerFX.cpp
-  VideoControllerFX.cpp
+  src/PolyTrailFX.cpp
+  src/PolyTrailProps.cpp
+  src/RumbleFX.cpp
+  src/Soundfx.cpp
+  src/spritefx.cpp
+  src/stdafx.cpp
+  src/TracerFX.cpp
+  src/VideoControllerFX.cpp
 )
 
 include_directories(
