@@ -1,5 +1,9 @@
 project(DLL_Server)
 
+include(FindPkgConfig)
+
+pkg_check_modules(SDL2 REQUIRED sdl2)
+
 add_definitions(-DDE_SERVER_COMPILE -DDIRECTENGINE_COMPILE -DSTDLITH_ALLOC_OVERRIDE -DLT15_COMPAT -DNO_PRAGMA_LIBS)
 
 set(libsources
@@ -159,7 +163,7 @@ if(WIN32)
 else(WIN32)
 	include_directories(../kernel/src/sys/linux
 		../shared/src/sys/linux
-		/usr/include/SDL2)
+		${SDL2_INCLUDE_DIRS})
 endif(WIN32)
 
 if(ENABLE_D3D)

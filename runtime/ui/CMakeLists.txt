@@ -1,5 +1,9 @@
 project(LIB_UI)
 
+include(FindPkgConfig)
+
+pkg_check_modules(SDL2 REQUIRED sdl2)
+
 set(libsources
 	src/cuibase.cpp
 	src/cuibase_impl.cpp
@@ -52,8 +56,7 @@ include_directories(src
 	../../libs/stdlith
 	../shared/src
 	../kernel/src
-	../kernel/mem/src
-	/usr/include/SDL2)
+	../kernel/mem/src)
 
 if(WIN32)
 	set(libsources ${libsources}
@@ -66,7 +69,8 @@ if(UNIX)
 	set(libsources ${libsources}
 		src/sys/linux/cuivectorfont.cpp)
     include_directories (../shared/src/sys/linux
-        ../kernel/src/sys/linux)
+		../kernel/src/sys/linux
+		${SDL2_INCLUDE_DIRS})
 endif(UNIX)
 
 

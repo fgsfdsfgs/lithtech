@@ -295,6 +295,7 @@ endif(MSVC)
 if(LINUX)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Werror -fPIC")
     include_directories(${CMAKE_SOURCE_DIR}/libs/DynRes
+                        ${SDL2_INCLUDE_DIRS}
                         ${CMAKE_SOURCE_DIR}/json/single_include)
 endif(LINUX)
 
@@ -311,7 +312,6 @@ include_directories(../ClientShellShared
     ../../../libs/LTGUIMgr
     ../../../libs/ServerDir
     ../../ClientRes/Shared
-    ${SDL2_INCLUDE_DIRS}
     ../../ClientRes/TO2)
 
 target_link_libraries(${PROJECT_NAME}
@@ -322,7 +322,7 @@ target_link_libraries(${PROJECT_NAME}
     LIB_Lith
     LIB_RegMgr
     LIB_LTGUIMgr
-    ${SDL2_LIBRARIES}
     ServerDir
     LIB_DynRes
+    ${SDL2_LIBRARIES}
     pthread)

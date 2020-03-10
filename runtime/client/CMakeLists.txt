@@ -9,6 +9,10 @@ else(CMAKE_CL_64)
 endif(CMAKE_CL_64)
 endif(WIN32)
 
+include(FindPkgConfig)
+
+pkg_check_modules(SDL2 REQUIRED sdl2)
+
 set(exec_src
 	../controlfilemgr/controlfilemgr.cpp
 	src/client_filemgr.cpp
@@ -263,10 +267,11 @@ if(WIN32)
 else(WIN32)
 	include_directories(../kernel/src/sys/linux
 		../shared/src/sys/linux
-		/usr/include/SDL2)
+		${SDL2_INCLUDE_DIRS})
 	set(libs ${libs}
 	    dl
-		pthread)
+		pthread
+		${SDL2_LIBRARIES})
 
 endif(WIN32)
 
@@ -300,8 +305,7 @@ set(libs ${libs}
 	LIB_Lith
 	LIB_Info
 	LIB_ILTSound
-	LIB_UI
-    SDL2)
+	LIB_UI)
 
 
 if(ENABLE_OPENGL)
