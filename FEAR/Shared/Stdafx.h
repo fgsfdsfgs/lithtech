@@ -16,13 +16,13 @@
 #pragma warning( disable : 4530 )  
 
 // Note : This block of includes must come first to avoid issues with windows.h renaming symbols like GetObject->GetObjectA
-#include "platform.h"
 #if defined( PLATFORM_WIN32 )
+#include "platform.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
-#include "engine.h"
+// #include "engine.h"
 
 #include <stdio.h>
 #include <limits.h>
@@ -38,11 +38,11 @@
 #include "iltserver.h"
 #include "iltmessage.h"
 #include "iltsoundmgr.h"
-#include "Globals.h"
 #include "iltmodel.h"
 #include "iltphysics.h"
 #include "ltobjectcreate.h"
 #include "ltbasetypes.h"
+#include "Globals.h"
 #include "ltobjref.h"
 #include "Factory.h"
 #ifdef _SERVERBUILD

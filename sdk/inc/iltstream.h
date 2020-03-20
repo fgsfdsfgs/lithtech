@@ -233,6 +233,9 @@ READWRITE_FN(uint32);
 READWRITE_FN(float);
 READWRITE_FN(double);
 
+class ILTInStream : public ILTStream {};
+class ILTOutStream : public ILTStream {};
+
 
 #endif  //! __ILTSTREAM_H__
 

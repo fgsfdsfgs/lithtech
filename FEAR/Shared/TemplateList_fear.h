@@ -22,15 +22,15 @@
 #include "Globals.h"
 #include "BankedList.h"
 
-enum TListItemType { TLIT_FIRST=0, TLIT_NEXT, TLIT_CURRENT, TLIT_LAST };
+enum TListItemType { TLIT_FIRST=0, TLIT_NEXT, TLIT_CURRENT };
 
-typedef LTBOOL (*SaveDataFn)(ILTMessage_Write *pMsg, void* pPtDataItem);
-typedef LTBOOL (*LoadDataFn)(ILTMessage_Read *pMsg, void* pPtDataItem);
+typedef bool (*SaveDataFn)(ILTMessage_Write *pMsg, void* pPtDataItem);
+typedef bool (*LoadDataFn)(ILTMessage_Read *pMsg, void* pPtDataItem);
 
 extern int s_cLTLinkBankRefCount;
-extern CBankedList<LTLink>* s_pLTLinkBank;
+extern CBankedList< LTLink >* s_pLTLinkBank;
 
-template <class T>
+template <typename T>
 class CTList
 {
 	public :
@@ -41,12 +41,12 @@ class CTList
         void Save(ILTMessage_Write *pMsg, SaveDataFn saveFn);
         void Load(ILTMessage_Read *pMsg, LoadDataFn loadFn);
 
-        LTBOOL   Init(LTBOOL bManageData=LTFALSE);
+        bool   Init(bool bManageData=false);
 		void	Add(T);
 		void	AddTail(T);
-        LTBOOL   RemoveHead();
-        LTBOOL   Remove(T);
-		int		GetLength() const { return m_list.m_nElements; }
+        bool   RemoveHead();
+        bool   Remove(T);
+		int		GetLength() const { return m_list.GetCount(); }
 		void	Clear();
 
 		T*		GetItem(TListItemType et);
@@ -54,49 +54,47 @@ class CTList
 	private :
 
 		// Note : The banked list is stored per list type so it doesn't get huge
-		CBankedList<LTLink> *GetBank()
+		CBankedList< LTLink > *GetBank()
 		{
-			_ASSERT(!!s_pLTLinkBank);
+			LTASSERT(s_pLTLinkBank != NULL, "Link bank not initialized");
 			return s_pLTLinkBank;
 		}
 
-        LTList   m_list;
-        LTBOOL   m_bManageData;
+        CLTList   m_list;
+        bool   m_bManageData;
         LTLink*  m_pCurGetItemLink;  // Used to loop over list (not saved)
 
 		void	RemoveAllData();
 };
 
-template <class T>
+template <typename T>
 CTList<T>::CTList()
 {
 	if ( 0 == s_cLTLinkBankRefCount && !s_pLTLinkBank )
 	{
-		s_pLTLinkBank = debug_new(CBankedList<LTLink>);
+		s_pLTLinkBank = debug_new(CBankedList< LTLink >);
 	}
-
+	
 	s_cLTLinkBankRefCount++;
 
-    m_bManageData = LTFALSE;
-    m_pCurGetItemLink = LTNULL;
-	dl_InitList(&m_list);
-    m_list.m_Head.m_pData = LTNULL;
+    m_bManageData = false;
+    m_pCurGetItemLink = NULL;
+	m_list.Reset();
 }
 
-template <class T>
-LTBOOL CTList<T>::Init(LTBOOL bManageData)
+template <typename T>
+bool CTList<T>::Init(bool bManageData)
 {
 	m_bManageData = bManageData;
 
-	dl_InitList(&m_list);
-    m_list.m_Head.m_pData = LTNULL;
+	m_list.Reset();
 
-    m_pCurGetItemLink = LTNULL;
+    m_pCurGetItemLink = NULL;
 
-    return LTTRUE;
+    return true;
 }
 
-template <class T>
+template <typename T>
 CTList<T>::~CTList()
 {
 	Clear();
@@ -106,28 +104,30 @@ CTList<T>::~CTList()
 	if ( 0 == s_cLTLinkBankRefCount && !!s_pLTLinkBank )
 	{
 		debug_delete(s_pLTLinkBank);
-		s_pLTLinkBank = LTNULL;
+		s_pLTLinkBank = NULL;
 	}
 }
 
-template <class T>
+template <typename T>
 void CTList<T>::Add(T t)
 {
     LTLink* pLink = GetBank()->New();
-	if (pLink) dl_AddHead(&m_list, pLink, (void*)t);
+	pLink->SetData(t);
+	if (pLink) m_list.AddHead(*pLink);
 }
 
-template <class T>
+template <typename T>
 void CTList<T>::AddTail(T t)
 {
     LTLink* pLink = GetBank()->New();
-	if (pLink) dl_AddTail(&m_list, pLink, (void*)t);
+	pLink->SetData(t);
+	if (pLink) m_list.AddTail(*pLink);
 }
 
-template <class T>
-LTBOOL CTList<T>::RemoveHead()
+template <typename T>
+bool CTList<T>::RemoveHead()
 {
-    LTLink* pCur = m_list.m_Head.m_pNext;
+    LTLink* pCur = m_list.Begin();
 	if (pCur)
 	{
 		// Clean up m_pCurGetItemLink if necessary...
@@ -137,69 +137,69 @@ LTBOOL CTList<T>::RemoveHead()
 			m_pCurGetItemLink = m_pCurGetItemLink->m_pNext;
 		}
 
-		dl_RemoveAt(&m_list, pCur);
+		m_list.Remove(*pCur);
 
 		if (m_bManageData)
 		{
-			debug_delete((T)pCur->m_pData);
+			debug_delete((T)pCur->GetData());
 		}
 
 		GetBank()->Delete(pCur);
-        return LTTRUE;
+        return true;
 	}
 
-    return LTFALSE;
+    return false;
 }
 
-template <class T>
-LTBOOL CTList<T>::Remove(T t)
+template <typename T>
+bool CTList<T>::Remove(T t)
 {
-    LTLink* pCur = m_list.m_Head.m_pNext;
-	while (pCur && pCur != &(m_list.m_Head))
+    CLTListIterator itCur = m_list.Begin();
+	while (itCur != m_list.End())
 	{
-		if (pCur->m_pData == t)
+		if (*itCur == t)
 		{
 			// Clean up m_pCurGetItemLink if necessary...
 
-			if (m_pCurGetItemLink && m_pCurGetItemLink == pCur)
+			if (m_pCurGetItemLink && (m_pCurGetItemLink == itCur))
 			{
 				m_pCurGetItemLink = m_pCurGetItemLink->m_pNext;
 			}
 
-			dl_RemoveAt(&m_list, pCur);
+			m_list.Remove(itCur.GetLink());
 
 			if (m_bManageData)
 			{
-				debug_delete((T)pCur->m_pData);
+				debug_delete((T)*itCur);
 			}
 
-			GetBank()->Delete(pCur);
-            return LTTRUE;
+			GetBank()->Delete(itCur.GetLink());
+            return true;
 		}
 
-		pCur = pCur->m_pNext;
+		itCur++;
 	}
 
-    return LTFALSE;
+    return false;
 }
 
 
-template <class T>
+template <typename T>
 void CTList<T>::RemoveAllData()
 {
 	if (!m_bManageData) return;
 
-    LTLink* pCur = m_list.m_Head.m_pNext;
-	while (pCur && pCur != &(m_list.m_Head))
+    LTListIter<void*> itCur = m_list.Begin();
+	while (itCur != m_list.End())
 	{
-		debug_delete((T)pCur->m_pData);
-        pCur->m_pData = LTNULL;
-		pCur = pCur->m_pNext;
+		debug_delete((T)*itCur);
+        *itCur = NULL;
+		itCur++;
 	}
 }
 
 
-template <class T>
+template <typename T>
 void CTList<T>::Clear()
 {
 	if (m_bManageData)
@@ -207,25 +207,24 @@ void CTList<T>::Clear()
 		RemoveAllData();
 	}
 
-    LTLink* pNext;
-    LTLink *pCur = m_list.m_Head.m_pNext;
-	while (pCur && pCur != &(m_list.m_Head))
+    LTListIter<void*> itNext;
+    LTListIter<void*> itCur = m_list.Begin();
+	while (itCur != m_list.End())
 	{
-		pNext = pCur->m_pNext;
-		dl_RemoveAt(&m_list, pCur);
-		GetBank()->Delete(pCur);
-		pCur = pNext;
+		itNext = itCur.GetNext();
+		m_list.Remove(itCur.GetLink());
+		GetBank()->Delete(itCur.GetLink());
+		itCur = itNext;
 	}
 
-	dl_InitList(&m_list);
+	m_list.Reset();
 }
 
-template <class T>
+template <typename T>
 T* CTList<T>::GetItem(TListItemType et)
 {
-    T* pT = LTNULL;
-
-    if (m_list.m_nElements < 1) return LTNULL;
+    if (m_list.IsEmpty()) 
+		return NULL;
 
 	switch(et)
 	{
@@ -233,7 +232,7 @@ T* CTList<T>::GetItem(TListItemType et)
 		{
 			if (m_pCurGetItemLink)
 			{
-				m_pCurGetItemLink = m_pCurGetItemLink->m_pNext;
+				m_pCurGetItemLink = m_pCurGetItemLink->GetNext();
 			}
 		}
 		break;
@@ -246,51 +245,45 @@ T* CTList<T>::GetItem(TListItemType et)
 
 		case TLIT_FIRST:
 		{
-			m_pCurGetItemLink = m_list.m_Head.m_pNext;
-		}
-		break;
-
-		case TLIT_LAST:
-		{
-			m_pCurGetItemLink = m_list.m_Head.m_pPrev;
+			m_pCurGetItemLink = m_list.Begin();
 		}
 		break;
 
 		default : break;
 	}
 
-	if (m_pCurGetItemLink && m_pCurGetItemLink->m_pData)
+	if (m_pCurGetItemLink && (m_pCurGetItemLink != m_list.End()) && m_pCurGetItemLink->GetData())
 	{
-		pT = (T*)&(m_pCurGetItemLink->m_pData);
+		return (T*)&(m_pCurGetItemLink->GetData());
 	}
 
-	return pT;
+	return NULL;
 }
 
-template <class T>
+template <typename T>
 void CTList<T>::Save(ILTMessage_Write *pMsg, SaveDataFn saveFn)
 {
 	if (!pMsg || !saveFn) return;
 
-	pMsg->Writebool(m_bManageData != LTFALSE);
+	pMsg->Writebool(m_bManageData != false);
 	pMsg->Writeuint32(m_list.m_nElements);
 
-    LTLink *pCur = m_list.m_Head.m_pNext;
-	while (pCur && pCur != &(m_list.m_Head) && pCur->m_pData)
+    LTListIter<void*> itCur = m_list.Begin();
+	while ((itCur != m_list.End()) && (*itCur))
 	{
-		T* pT = (T*)&(pCur->m_pData);
+		T* pT = (T*)&(*itCur);
 		saveFn(pMsg, (void*)pT);
-		pCur = pCur->m_pNext;
+		itCur++;
 	}
 }
 
 
-template <class T>
+template <typename T>
 void CTList<T>::Load(ILTMessage_Read *pMsg, LoadDataFn loadFn)
 {
 	if (!pMsg || !loadFn) return;
 
-    m_bManageData = pMsg->Readbool() ? LTTRUE : LTFALSE;
+    m_bManageData = pMsg->Readbool() ? true : false;
     uint32 nElements = pMsg->Readuint32();
 
 	for (uint32 i=0; i < nElements; i++)

@@ -1,5 +1,5 @@
-#include "Stdafx.h"
+#include "StdAfx.h"
 #include "TemplateList.h"
 
 int s_cLTLinkBankRefCount = 0;
-CBankedList< LTLink<void*> >* s_pLTLinkBank = NULL;
+CBankedList<LTLink>* s_pLTLinkBank = LTNULL;

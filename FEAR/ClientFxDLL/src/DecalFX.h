@@ -15,7 +15,7 @@
 // Includes....
 
 #ifndef __BASEFX_H__
-#	include "basefx.h"
+#	include "BaseFX.h"
 #endif
 
 #ifndef __ILTCUSTOMRENDER_H__
@@ -23,7 +23,7 @@
 #endif
 
 #ifndef __CLIENTFX_H__
-#	include "clientfx.h"
+#	include "ClientFX.h"
 #endif
 
 // Forward declarations

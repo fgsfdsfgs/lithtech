@@ -10,7 +10,7 @@
 #define __CLIENTFXSKYUTILS_H__
 
 // FX sky settings
-enum EFXSkySetting
+enum EFXSkySetting : uint8_t
 {
 	eFXSkySetting_None,
 	eFXSkySetting_Sky,

@@ -5,7 +5,6 @@ routines to insert, remove, and tie off.  */
 #ifndef __LTLINK_H__
 #define __LTLINK_H__
 
-
 class LTLink;
 
 
@@ -81,7 +80,6 @@ public:
 
 
 public:
-
     LTLink *m_pPrev, *m_pNext;
 };
 
@@ -91,12 +89,20 @@ public:
 
     force_inline LTLink() {}
     force_inline LTLink(LTLinkCommand cmd) {
-        TieOff();
+        this->TieOff();
     }
 
     force_inline void Init2(void *pData) {
-        TieOff();
+        this->TieOff();
         m_pData = pData;
+    }
+    template <typename objectType>
+    force_inline void SetData(const objectType& data) {
+        this->m_pData = &data;
+    }
+
+    force_inline void* GetData() const {
+        return this->m_pData;
     }
 
 
@@ -106,17 +112,17 @@ public:
 
 
 force_inline void CheapLTLink::Init() {
-    TieOff();
+    this->TieOff();
 }
 
 force_inline void CheapLTLink::Term() {
-    Remove();
+    this->Remove();
 }
 
 force_inline void CheapLTLink::Remove() {
     m_pPrev->m_pNext = m_pNext;
     m_pNext->m_pPrev = m_pPrev;
-    TieOff();
+    this->TieOff();
 }
 
 force_inline void CheapLTLink::TieOff() {
@@ -150,7 +156,6 @@ force_inline void dl_TieOff(CheapLTLink *pLink) {
     pLink->TieOff();
 }
 
- 
 force_inline void dl_Insert(CheapLTLink *pAfter, CheapLTLink *pLink) {
     pAfter->AddAfter(pLink);
 }
@@ -178,6 +183,7 @@ public:
 
  
     unsigned long m_nElements;
+     
     LTLink m_Head;
 };
 

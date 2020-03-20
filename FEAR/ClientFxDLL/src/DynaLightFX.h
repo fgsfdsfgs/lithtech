@@ -14,7 +14,7 @@
 // Includes....
 
 #ifndef __BASEFX_H__
-#	include "basefx.h"
+#	include "BaseFX.h"
 #endif
 
 #ifndef __CLIENTFXPROP_H__

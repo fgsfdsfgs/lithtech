@@ -43,6 +43,7 @@ include_directories(
   ../../sdk/inc
   ../../libs/lith
   ../../libs/stdlith
+  ../../libs/WONAPI
   ../Shared
 )
 
@@ -60,6 +61,7 @@ add_definitions(
   -D_LINUX
   -D__LINUX
 )
+include_directories(src/sys/linux)
 endif(WIN32)
 
 add_library( ${PROJECT_NAME} SHARED ${SOURCES} )

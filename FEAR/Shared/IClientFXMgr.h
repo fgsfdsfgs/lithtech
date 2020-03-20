@@ -71,7 +71,7 @@ public:
 	//vOutFov is the relative scale for the FOV
 	virtual bool	GetCameraModifier(	const LTRigidTransform& tCameraTrans,
 										LTRigidTransform& tOutTrans,
-										LTVector2& vOutFov) = 0;
+										LTVector2f& vOutFov) = 0;
 };
 
 class IClientFXMgr
@@ -105,14 +105,17 @@ public:
 
 	//called to subscribe to the overlay functionality which allows for rendering an overlay on top
 	//of the screen
-	virtual void	SubscribeOverlay(LTLink<IClientFXOverlay*>& Link) = 0;
+	// IClientFXOverlay*
+	virtual void	SubscribeOverlay(LTLink& Link) = 0;
 
 	//called to subscribe to the controller functionality which allows for modifying controller state
 	//such as force feedback
-	virtual void	SubscribeController(LTLink<IClientFXController*>& Link) = 0;
+	//IClientFXController*
+	virtual void	SubscribeController(LTLink& Link) = 0;
 
 	//called to subscribe to the camera functionality which allows for modifying the camera positioning
-	virtual void	SubscribeCamera(LTLink<IClientFXCamera*>& Link) = 0;
+	//IClientFXCamera*
+	virtual void	SubscribeCamera(LTLink& Link) = 0;
 };
 
 #endif

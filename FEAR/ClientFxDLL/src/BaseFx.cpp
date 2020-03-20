@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "BaseFx.h"
+#include "BaseFX.h"
 #include "ClientFX.h"
 #include "ClientFxProp.h"
 

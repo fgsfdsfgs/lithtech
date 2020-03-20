@@ -12,7 +12,7 @@
 #define __CAMERASHAKEFX_H__
 
 #ifndef __BASEFX_H__
-#	include "basefx.h"
+#	include "BaseFX.h"
 #endif
 
 //----------------------------------------------------------------

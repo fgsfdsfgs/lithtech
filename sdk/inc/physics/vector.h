@@ -25,7 +25,7 @@ LTVector2f (whose components are \b float's), LTVector2d (whose components are
 
 Used for: Math.
 */
-template< class T >
+template< typename T >
 class LTVector2
 {
 public:

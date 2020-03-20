@@ -11,8 +11,8 @@
 #ifndef	__BASECREATEFX_H__
 #define __BASECREATEFX_H__
 
-#include "BaseFx.h"
-#include "clientfx.h"
+#include "BaseFX.h"
+#include "ClientFX.h"
 
 //-------------------------------------------
 // CBaseCreateProps

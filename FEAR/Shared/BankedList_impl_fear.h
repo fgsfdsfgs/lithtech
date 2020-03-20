@@ -5,6 +5,10 @@
 
 #include <stdio.h>
 
+// Disable the warning about deprecated access-declarations 
+#pragma warning(push)
+#pragma warning(disable:4517)
+
 // A page of items
 // (Internal class for internal use only..)
 template <typename T>
@@ -19,22 +23,17 @@ private:
     typedef CBankedListBank<T> t_This;
 	typedef T t_Type;
 
-#ifdef __PSX2
-    friend class t_Parent;
-    friend class t_Parent::t_Iter;
-#else
-    friend t_Parent;
-    friend typename t_Parent::t_Iter;
-#endif
+    friend class CBankedList<T>;
+	friend class CBankedListIter<T>;
 
 	// Is this bank currently full?
-	LTBOOL IsFull();
+	bool IsFull();
 	// Is this bank currently empty?
-	LTBOOL IsEmpty();
+	bool IsEmpty();
 	// Is this bank currently packed? (i.e. are the used items in contiguous usage?)
-	LTBOOL IsPacked();
+	bool IsPacked();
 	// Is this index in use?
-	LTBOOL IsUsed(uint32 nIndex);
+	bool IsUsed(uint32 nIndex);
 	// Get the index of pPtr (returns k_SizeOfBank if it isn't in this bank)
 	uint32 GetIndexAtPtr(t_Type *pPtr);
 	// Get object nIndex
@@ -74,11 +73,14 @@ private: // Intended for internal access only
 	int m_aData[k_SizeOfData];
 };
 
+#pragma warning(pop)
+
+
 //////////////////////////////////////////////////////////////////////////////
 // CBankedList<T>::t_Iter implementation
 
 template <typename T>
-CBankedListIter<T>::CBankedListIter() : m_pCurBank(LTNULL), m_nIndex(0)
+CBankedListIter<T>::CBankedListIter() : m_pCurBank(NULL), m_nIndex(0)
 {
 }
 
@@ -93,14 +95,14 @@ CBankedListIter<T>::CBankedListIter(t_Bank *pBank, uint32 nIndex) : m_pCurBank(p
 }
 
 template <typename T>
-LTBOOL CBankedListIter<T>::IsValid()
+bool CBankedListIter<T>::IsValid()
 {
 	// Invalid bank?  Not valid..
 	if (!m_pCurBank)
-		return LTFALSE;
+		return false;
 	// Invalid index?  Not valid..
 	if (m_nIndex >= t_Parent::k_SizeOfBank)
-		return LTFALSE;
+		return false;
 	// You're valid, as long as the bank says you're in use
 	return m_pCurBank->IsUsed(m_nIndex);
 }
@@ -111,7 +113,7 @@ T &CBankedListIter<T>::DeRef()
 	// Not pointing at anything?   Uh...  Make something up...
 	if (!m_pCurBank)
 	{
-		return *((T*)LTNULL);
+		return *((T*)NULL);
 	}
 
 	return m_pCurBank->GetRefAtIndex(m_nIndex);
@@ -177,31 +179,31 @@ uint32 CBankedListIter<T>::GetIndex()
 // CBankedList<T>::t_Bank implementation
 
 template <typename T>
-CBankedListBank<T>::CBankedListBank() : m_nUsage(0), m_pNextBank(LTNULL), m_pPrevBank(LTNULL)
+CBankedListBank<T>::CBankedListBank() : m_nUsage(0), m_pNextBank(NULL), m_pPrevBank(NULL)
 {
 }
 
 template <typename T>
-LTBOOL CBankedListBank<T>::IsFull()
+bool CBankedListBank<T>::IsFull()
 {
 	return m_nUsage == 0xFFFFFFFF;
 }
 
 template <typename T>
-LTBOOL CBankedListBank<T>::IsEmpty()
+bool CBankedListBank<T>::IsEmpty()
 {
 	return m_nUsage == 0;
 }
 
 template <typename T>
-LTBOOL CBankedListBank<T>::IsPacked()
+bool CBankedListBank<T>::IsPacked()
 {
 	// Returns TRUE if the "used" bits are contiguous
 	return (m_nUsage & (m_nUsage + 1)) == 0;
 }
 
 template <typename T>
-LTBOOL CBankedListBank<T>::IsUsed(uint32 nIndex)
+bool CBankedListBank<T>::IsUsed(uint32 nIndex)
 {
 	return (m_nUsage & (1 << nIndex)) != 0;
 }
@@ -319,14 +321,14 @@ T* CBankedListBank<T>::New(typename t_Parent::t_NewOp eOp)
 	{
 		// Fail if we're full
 		if (IsFull())
-			return LTNULL;
+			return NULL;
 		nIndex = GetFirstOpen();
 	}
 	else if (eOp == t_Parent::eNewOp_Append)
 	{
 		// Fail if we can't append..
-		if (IsUsed(t_Parent::k_SizeOfBank - 1) || (GetNext() != LTNULL))
-			return LTNULL;
+		if (IsUsed(t_Parent::k_SizeOfBank - 1) || (GetNext() != NULL))
+			return NULL;
 
 		if (IsEmpty())
 			nIndex = 0;
@@ -375,8 +377,8 @@ void CBankedListBank<T>::AppendList(t_This *pTail)
 	}
 	else
 	{
-		m_pNextBank = LTNULL;
-		m_pPrevBank = LTNULL;
+		m_pNextBank = NULL;
+		m_pPrevBank = NULL;
 	}
 }
 
@@ -393,8 +395,8 @@ void CBankedListBank<T>::InsertList(t_This *pHead)
 	}
 	else
 	{
-		m_pNextBank = LTNULL;
-		m_pPrevBank = LTNULL;
+		m_pNextBank = NULL;
+		m_pPrevBank = NULL;
 	}
 }
 
@@ -402,7 +404,7 @@ void CBankedListBank<T>::InsertList(t_This *pHead)
 // CBankedList<T> implementation
 
 template <typename T>
-CBankedList<T>::CBankedList() : m_pBankHead(LTNULL), m_pBankTail(LTNULL), m_pEmptyHead(LTNULL), m_nSize(0)
+CBankedList<T>::CBankedList() : m_pBankHead(NULL), m_pBankTail(NULL), m_pEmptyHead(NULL), m_nSize(0)
 {
 }
 
@@ -424,14 +426,14 @@ void CBankedList<T>::Term()
 	if (m_pEmptyHead)
 	{
 		DeleteBankList(m_pEmptyHead);
-		m_pEmptyHead = LTNULL;
+		m_pEmptyHead = NULL;
 	}
 	if (m_pBankHead)
 	{
 		DeleteBankList(m_pBankHead);
-		m_pBankHead = LTNULL;
+		m_pBankHead = NULL;
 	}
-	m_pBankTail = LTNULL;
+	m_pBankTail = NULL;
 	m_nSize = 0;
 }
 
@@ -512,15 +514,6 @@ void CBankedList<T>::Delete(t_Type *pPtr, bool bCallDtor)
 	if (!pPtr)
 		return;
 
-#ifdef __PSX2
-	// Call the dtor
-	if (bCallDtor)
-        delete pPtr;
-//        pPtr->~T();
-    else
-        free(pPtr);
-#else
-
 	// Find the pointer in the list
 	t_Iter iPtr = Find(pPtr);
 
@@ -552,7 +545,6 @@ void CBankedList<T>::Delete(t_Type *pPtr, bool bCallDtor)
 		g_pLTClient->CPrint("BankedList::Delete(%d) : %d", sizeof(t_Type), GetSize());
 	}
 	*/
-#endif
 }
 
 template <typename T>
@@ -563,12 +555,10 @@ void operator delete(void*, CBankedList<T> &cBank, T* ptr) { cBank.Delete(ptr); 
 template <typename T>
 T *CBankedList<T>::New(t_NewOp eOp, bool bCallCtor)
 {
-#ifdef __PSX2
-    T *pNewItem;
-    pNewItem = new T;
-#else
+	LTUNREFERENCED_PARAMETER(bCallCtor);
+
 	// Get our bank
-	t_Bank *pBank = LTNULL;
+	t_Bank *pBank = NULL;
 	if (eOp == eNewOp_Pack)
 	{
 		// Find the first available bank
@@ -581,7 +571,7 @@ T *CBankedList<T>::New(t_NewOp eOp, bool bCallCtor)
 		pBank = m_pBankTail;
 		// Get a new bank if this one's been used all the way..
 		if (pBank && pBank->IsUsed(k_SizeOfBank - 1))
-			pBank = LTNULL;
+			pBank = NULL;
 	}
 
 	// Get a new bank if we need to..
@@ -594,7 +584,7 @@ T *CBankedList<T>::New(t_NewOp eOp, bool bCallCtor)
 	if (!pBank)
 	{
 		ASSERT(!"Unable to allocate a bank in CBankedList<T>::New");
-		return LTNULL;
+		return NULL;
 	}
 
 	// Get a new one from the bank
@@ -614,14 +604,13 @@ T *CBankedList<T>::New(t_NewOp eOp, bool bCallCtor)
 		g_pLTClient->CPrint("BankedList::New(%d) : %d", sizeof(t_Type), GetSize());
 	}
 	*/
-#endif
 	return pNewItem;
 }
 
 template <typename T>
-LTBOOL CBankedList<T>::IsEmpty()
+bool CBankedList<T>::IsEmpty()
 {
-	return m_pBankHead == LTNULL;
+	return m_pBankHead == NULL;
 }
 
 template <typename T>
@@ -651,7 +640,6 @@ uint32 CBankedList<T>::GetFootprint()
 		nSize += sizeof(*pFinger);
 		pFinger = pFinger->GetNext();
 	}
-	return nSize;
 }
 
 template <typename T>
@@ -739,7 +727,7 @@ typename CBankedList<T>::t_Bank *CBankedList<T>::GetNewBank()
 }
 
 template <typename T>
-LTBOOL CBankedList<T>::PreAlloc(uint32 nMinItems)
+bool CBankedList<T>::PreAlloc(uint32 nMinItems)
 {
 	// Calculate how many banks we'd need..
 	uint32 nBanksNeeded = (nMinItems + k_SizeOfBank - 1) / k_SizeOfBank;
@@ -758,7 +746,6 @@ LTBOOL CBankedList<T>::PreAlloc(uint32 nMinItems)
 		pNewBank->InsertList(m_pEmptyHead);
 		m_pEmptyHead = pNewBank;
 	}
-	return LTTRUE;
 }
 
 template <typename T>
@@ -767,6 +754,6 @@ void CBankedList<T>::Flush()
 	if (m_pEmptyHead)
 	{
 		DeleteBankList(m_pEmptyHead);
-		m_pEmptyHead = LTNULL;
+		m_pEmptyHead = NULL;
 	}
 }

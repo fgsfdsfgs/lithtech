@@ -67,7 +67,7 @@ public:
 	T *New(t_NewOp eOp = eNewOp_Pack, bool bCallCtor = true);
 
 	// Are you empty?
-	LTBOOL IsEmpty();
+	bool IsEmpty();
 	// How many items are currently in the list
 	uint32 GetSize();
 	// How much memory are you taking up?
@@ -76,7 +76,7 @@ public:
 	float GetUsage();
 
 	// Make sure at least nMinItems items are available
-	LTBOOL PreAlloc(uint32 nMinItems);
+	bool PreAlloc(uint32 nMinItems);
 
 	// Get rid of the empty list
 	void Flush();
@@ -116,7 +116,7 @@ public:
 	CBankedListIter(const t_This &iOther);
 
 	// Are you actually pointing at something?
-	LTBOOL IsValid();
+	bool IsValid();
 	// Get what this iterator is currently pointing at
 	t_Type &DeRef();
 	// Move to the next item

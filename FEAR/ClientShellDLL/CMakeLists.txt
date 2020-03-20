@@ -53,7 +53,7 @@ add_library (${PROJECT_NAME} SHARED
 	src/ExplosionFX.cpp
 	src/FinishingMoveFX.cpp
 	src/FlashLight.cpp
-	src/../Shared/ForceVolume.cpp
+	../Shared/ForceVolume.cpp
 	src/ForensicObjectFX.cpp
 	src/FrameStatConsoleInfo.cpp
 	src/FullScreenTint.cpp
@@ -65,7 +65,7 @@ add_library (${PROJECT_NAME} SHARED
 	src/GlobalsInit.cpp
 	src/HeadBobMgr.cpp
 	src/HitBox.cpp
-	src/../Shared/HostOptionsMapMgr.cpp
+	../Shared/HostOptionsMapMgr.cpp
 	src/HUDActivate.cpp
 	src/HUDActivateObject.cpp
 	src/HUDAmmo.cpp

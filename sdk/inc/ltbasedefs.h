@@ -2004,7 +2004,7 @@ raycasting, visibility, etc.  Use this whenever you can.
 /*!
 FLAG2_ defines.
 */
-enum
+enum : uint32_t
 {
 // WARNING: only the first 16 bits of FLAG2 are distributed to the
 // client.  If you add a new flag in the high 16 bits, the client will

@@ -15,7 +15,7 @@
 // Includes....
 
 #ifndef __BASEFX_H__
-#	include "basefx.h"
+#	include "BaseFX.h"
 #endif
 
 #ifndef __ILTCUSTOMRENDER_H__

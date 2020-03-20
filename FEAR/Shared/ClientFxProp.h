@@ -122,21 +122,20 @@ class CFxProp_Color4f
 {
 public:
 
-	typedef LTVector4	TDataType;
+	typedef LTVector4f	TDataType;
 
 	//given a color, this will convert it to a uint32 type color
-	static uint32	ToColor(const LTVector4& vColor)
+	static uint32	ToColor(const LTVector4f& vColor)
 	{
-		return SETRGBA(	(uint8)(vColor.x * 255.0f), 
+		return (SETRGB(	(uint8)(vColor.x * 255.0f), 
 						(uint8)(vColor.y * 255.0f), 
-						(uint8)(vColor.z * 255.0f), 
-						(uint8)(vColor.w * 255.0f));
+						(uint8)(vColor.z * 255.0f)) << 8 | (uint8)(vColor.w * 255.0f));
 	}
 
 	//handles loading properties of this type
-	static LTVector4 Load(ILTInStream* pStream)
+	static LTVector4f Load(ILTInStream* pStream)
 	{
-		LTVector4 vColor;
+		LTVector4f vColor;
 		(*pStream) >> vColor;
 		#if defined(PLATFORM_XENON)
 			// XENON: Swap data at runtime
@@ -145,7 +144,7 @@ public:
 		return vColor;
 	}
 
-	static void LittleEndianToNative(LTVector4* pVal)
+	static void LittleEndianToNative(LTVector4f* pVal)
 	{
 		#if defined(PLATFORM_XENON)
 			// XENON: Swap data at runtime
@@ -154,7 +153,7 @@ public:
 	}
 
 	//handles interpolating properties of this type
-	static LTVector4 Interpolate(const LTVector4& v1, const LTVector4& v2, float fT)
+	static LTVector4f Interpolate(const LTVector4f& v1, const LTVector4f& v2, float fT)
 	{
 		return v1 + (v2 - v1) * fT;
 	}

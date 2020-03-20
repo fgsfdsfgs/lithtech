@@ -10,7 +10,7 @@
 #define __LIGHTNINGPROPS_H__
 
 #ifndef __BASEFX_H__
-#	include "BaseFx.h"
+#	include "BaseFX.h"
 #endif
 
 #ifndef __CLIENTFXSKYUTILS_H__

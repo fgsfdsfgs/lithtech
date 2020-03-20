@@ -13,7 +13,7 @@
 #define __LIGHTNINGFX_H__
 
 #ifndef __BASEFX_H__
-#	include "BaseFx.h"
+#	include "BaseFX.h"
 #endif
 
 #ifndef __LIGHTNINGPROPS_H__

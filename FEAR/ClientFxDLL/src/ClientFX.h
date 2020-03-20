@@ -13,7 +13,7 @@
 
 // Includes....
 
-#include "BaseFx.h"
+#include "BaseFX.h"
 #include "DebugNew.h"
 #include "iltdrawprim.h"
 #include "iltsoundmgr.h"
