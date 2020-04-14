@@ -245,8 +245,8 @@ void CLIENTFX_INSTANCE::DeleteFX(CLinkListNode<FX_LINK> *pDelNode)
 			pActiveNode = pActiveNode->m_pNext;
 		}
 
-		// Give the FX a chance to clean itself up
-		// pDelFX->Term();
+		// delete will give the FX a chance to clean itself up
+		// which is only possible if FXDB library is still in memory
 		CClientFXDB::GetSingleton().DeleteEffect(pDelFX);
 	}
 
@@ -363,7 +363,7 @@ void CClientFXMgr::Term()
 	while (pInstNode)
 	{
 		pInstNode->m_Data->RemoveAllEffects();
-				
+
 		g_pCLIENTFX_INSTANCE_Bank->Delete( pInstNode->m_Data );
 				
 		pInstNode = pInstNode->m_pNext;

@@ -368,6 +368,8 @@ __declspec(dllexport) FX_REF fxGetRef(int nFx)
 
 __declspec(dllexport) void fxDelete(CBaseFX *pDeleteFX)
 {
+	// give the FX a chance to clean up
+	pDeleteFX->Term();
 	// Figure out what kind of FX we are deleting and make sure the propper bank handles it...
 
 	switch( pDeleteFX->GetFXType() )
