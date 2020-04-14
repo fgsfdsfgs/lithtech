@@ -923,6 +923,11 @@ void CClientFXDB::SetCreateCallback(TCreateClientFXFn pFn, void* pUserData)
 	}
 }
 
+bool CClientFXDB::isValid() const
+{
+	return (m_hDLLInst != nullptr);
+}
+
 //------------------------------------------------------------------
 // CClientFXDB Singleton support
 //------------------------------------------------------------------

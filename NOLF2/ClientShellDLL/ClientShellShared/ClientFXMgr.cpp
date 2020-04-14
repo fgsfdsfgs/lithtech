@@ -226,9 +226,8 @@ void CLIENTFX_INSTANCE::DeleteFX(CLinkListNode<FX_LINK> *pDelNode)
 	if( !pDelNode ) 
 		return;
 
-	CBaseFX* pDelFX = dynamic_cast<CBaseFX*>(pDelNode->m_Data.m_pFX);
-
-	if(pDelFX)
+	CBaseFX* pDelFX = pDelNode->m_Data.m_pFX;
+	if(pDelFX && CClientFXDB::GetSingleton().isValid())
 	{
 		// Make sure no other active FX in this instance have this pDelFX has their parent...
 		CLinkListNode<FX_LINK>	*pActiveNode = m_collActiveFX.GetHead();
